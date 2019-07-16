@@ -1,11 +1,10 @@
-from django.conf.urls.defaults import patterns, url
+from django.urls import path
 from .views import PayView, CallbackView, FailView, SuccessView
 
 
-urlpatterns = patterns(
-    '',
-    url(r'^$', PayView.as_view(), name='payonline_pay'),
-    url(r'^callback/$', CallbackView.as_view(), name='payonline_callback'),
-    url(r'^fail/$', FailView.as_view(), name='payonline_fail'),
-    url(r'^success/$', SuccessView.as_view(), name='payonline_success'),
-)
+urlpatterns = [
+    path('', PayView.as_view(), name='payonline_pay'),
+    path('callback/', CallbackView.as_view(), name='payonline_callback'),
+    path('fail/', FailView.as_view(), name='payonline_fail'),
+    path('success/', SuccessView.as_view(), name='payonline_success'),
+]

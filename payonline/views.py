@@ -2,18 +2,18 @@ from hashlib import md5
 
 from django.http import HttpResponse, HttpResponseBadRequest
 from django.shortcuts import render
-from django.utils.datastructures import SortedDict
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import View
 
+from payonline.forms import PaymentDataForm
 from .settings import CONFIG
 
 
 class PayView(View):
 
     def get_order_id(self):
-        return unicode(self.request.session.get('payonline_order_id'))
+        return self.request.session.get('payonline_order_id')
 
     def get_amount(self):
         return u'%.2f' % self.request.session.get('payonline_amount')
@@ -28,7 +28,7 @@ class PayView(View):
         return CONFIG['PRIVATE_SECURITY_KEY']
 
     def get_security_key_params(self, order):
-        params = SortedDict()
+        params = dict()
         params['MerchantId'] = self.get_merchant_id()
         params['OrderId'] = self.get_order_id()
         params['Amount'] = self.get_amount()
@@ -41,11 +41,13 @@ class PayView(View):
         return md5('&'.join('='.join(i) for i in params.items())).hexdigest()
 
     def get_context_data(self, **kwargs):
-        kwargs.update({'order_id': self.get_order_id(),
-                       'amount': self.get_amount(),
-                       'merchant_id': self.get_merchant_id(),
-                       'currency': self.get_currency(),
-                       'security_key': self.get_security_key()})
+        kwargs.update({
+            'order_id': self.get_order_id(),
+            'amount': self.get_amount(),
+            'merchant_id': self.get_merchant_id(),
+            'currency': self.get_currency(),
+            'security_key': self.get_security_key()
+        })
         return kwargs
 
     def get(self, request, *args, **kwargs):
@@ -62,7 +64,7 @@ class CallbackView(View):
 
     def process_form(self, form):
         if form.is_valid():
-            payment_data = form.save()
+            form.save()
             return HttpResponse()
         return HttpResponseBadRequest()
 

@@ -1,9 +1,6 @@
-import pytz
 from hashlib import md5
 
 from django import forms
-from django.core.exceptions import ObjectDoesNotExist
-from django.utils.datastructures import SortedDict
 
 from .models import PaymentData
 from .helpers import DataProxy
@@ -23,7 +20,7 @@ class PaymentDataForm(forms.ModelForm):
         super(PaymentDataForm, self).__init__(*args, **kwargs)
 
     def get_security_key_params(self):
-        params = SortedDict()
+        params = dict()
         params['DateTime'] = self.data.get('DateTime', '')
         params['TransactionID'] = self.data.get('TransactionID', '')
         params['OrderId'] = self.data.get('OrderId', '')
